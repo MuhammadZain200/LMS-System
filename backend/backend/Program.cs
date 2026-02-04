@@ -8,6 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
+//Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Frontend - React dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -20,11 +32,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
    .AddNegotiate();
 
-builder.Services.AddAuthorization(options =>
-{
-    // By default, all incoming requests will be authorized according to the default policy.
-    options.FallbackPolicy = options.DefaultPolicy;
-});
+builder.Services.AddAuthorization(); // default behavior
+
 
 var app = builder.Build();
 
@@ -34,6 +43,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Use CORS
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

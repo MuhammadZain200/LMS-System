@@ -30,6 +30,9 @@ namespace backend.Data
                 entity.Property(u => u.Email)
                       .IsRequired()
                       .HasMaxLength(150);
+                entity.Property(u => u.Password)   
+                        .IsRequired()
+                        .HasMaxLength(255);
                 entity.Property(u => u.Role)
                       .IsRequired()
                       .HasMaxLength(50);

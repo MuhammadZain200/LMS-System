@@ -1,12 +1,13 @@
 ﻿using backend.Data;
+using backend.DTOs;
 using backend.Models;
+using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BCrypt.Net;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using System.Security.Claims;
+using System.Text;
 
 namespace backend.Controllers
 {
@@ -24,17 +25,26 @@ namespace backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO userdto)
         {
-            if (user.Role != "Student")
+            if (userdto.Role != "Student")
                 return BadRequest("Only students can register here.");
 
             // Check if email exists
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == userdto.Email))
                 return BadRequest("Email already registered.");
 
             // Hash password
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userdto.Password);
+
+            // Map DTO to entity
+            var user = new User
+            {
+                Name = userdto.Name,
+                Email = userdto.Email,
+                Password = hashedPassword,
+                Role = userdto.Role
+            };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -43,7 +53,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User login)
+        public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email);
             if (user == null) return Unauthorized("Invalid credentials");
@@ -58,8 +68,7 @@ namespace backend.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(5),
                 Issuer = _config["Jwt:Issuer"] ?? "LMSBackend",
