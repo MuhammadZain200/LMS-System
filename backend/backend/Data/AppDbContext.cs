@@ -47,6 +47,15 @@ namespace backend.Data
                       .HasMaxLength(100);
                 entity.Property(c => c.Description)
                       .HasMaxLength(500);
+                entity.Property(c => c.Instructor)
+                      .IsRequired()
+                      .HasMaxLength(100);
+                entity.Property(c => c.Duration)
+                      .IsRequired();
+                entity.Property(c => c.Price)
+                      .IsRequired()
+                      .HasPrecision(18, 2);
+
             });
 
             // Enrollment configuration (many-to-many via Enrollment)
