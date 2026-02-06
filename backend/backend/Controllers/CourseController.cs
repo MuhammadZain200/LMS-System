@@ -56,6 +56,7 @@ namespace backend.Controllers
             course.Description = dto.Description;
             course.Duration = dto.DurationInHours;
             course.Price = dto.Price;
+            course.Instructor = dto.Instructor;
 
             await _context.SaveChangesAsync();
 

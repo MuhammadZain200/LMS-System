@@ -27,8 +27,8 @@ namespace backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO userdto)
         {
-            if (userdto.Role != "Student")
-                return BadRequest("Only students can register here.");
+            //if (userdto.Role != "Student")
+            //    return BadRequest("Only students can register here.");
 
             // Check if email exists
             if (await _context.Users.AnyAsync(u => u.Email == userdto.Email))
@@ -68,7 +68,9 @@ namespace backend.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name),          // optional but useful
+                    new Claim(ClaimTypes.Role, user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddHours(5),
                 Issuer = _config["Jwt:Issuer"] ?? "LMSBackend",

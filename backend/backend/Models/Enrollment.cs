@@ -1,4 +1,4 @@
-﻿namespace backend.Models
+﻿    namespace backend.Models
 {
     public class Enrollment
     {
@@ -7,7 +7,8 @@
         public User User { get; set; }
         public int CourseID { get; set; }
         public Course Course { get; set; }
-            
+        public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
+
 
     }
 }

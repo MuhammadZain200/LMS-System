@@ -48,7 +48,6 @@ namespace backend.Data
                 entity.Property(c => c.Description)
                       .HasMaxLength(500);
                 entity.Property(c => c.Instructor)
-                      .IsRequired()
                       .HasMaxLength(100);
                 entity.Property(c => c.Duration)
                       .IsRequired();

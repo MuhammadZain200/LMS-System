@@ -6,5 +6,6 @@
         public string Description { get; set; }
         public int DurationInHours { get; set; }
         public decimal Price { get; set; }
+        public string? Instructor { get; set; }
     }
 }
