@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { getToken, getUserIdFromToken } from "../utils/auth";
 import "../styles/CourseDetails.css";
 
 export default function CourseDetails() {
@@ -32,14 +33,23 @@ export default function CourseDetails() {
 
   const checkEnrollment = async () => {
     try {
-      const response = await api.get("/enrollments");
+      const token = getToken();
+      const userId = getUserIdFromToken(token);
+      
+      if (!userId) {
+        return; // Can't check enrollment without userId
+      }
+
+      // Backend endpoint: GET /api/enrollments/{userId}
+      const response = await api.get(`/enrollments/${userId}`);
       const enrollments = response.data || [];
       const enrolled = enrollments.some(
         (e) => e.courseId === parseInt(id) || e.course?.id === parseInt(id)
       );
       setIsEnrolled(enrolled);
     } catch (err) {
-      // Ignore error
+      // Ignore error - enrollment check is not critical
+      console.error("Error checking enrollment:", err);
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { getToken, getUserIdFromToken, decodeToken } from "../utils/auth";
 import "../styles/CourseList.css";
 
 export default function MyCourses() {
@@ -19,15 +20,36 @@ export default function MyCourses() {
   const fetchEnrolledCourses = async () => {
     try {
       setIsLoading(true);
-      // Backend should return enrollments for the current user based on JWT
-      const response = await api.get("/enrollments");
-      const enrollments = response.data || [];
+      const token = getToken();
+      const userId = getUserIdFromToken(token);
+      
+      // Debug logging
+      console.log("Token:", token ? "Present" : "Missing");
+      console.log("Extracted userId:", userId);
+      
+      if (!userId) {
+        // Try to decode and show what's in the token
+        const decoded = decodeToken(token);
+        console.log("Decoded token:", decoded);
+        setError("Unable to get user ID from token. Please login again.");
+        setEnrolledCourses([]);
+        return;
+      }
+
+      // Backend endpoint: GET /api/enrollments/{userId}
+      const response = await api.get(`/enrollments/${userId}`);
+      console.log("Enrollments response:", response.data);
+      
+      const enrollments = Array.isArray(response.data) ? response.data : [];
+      console.log("Processed enrollments:", enrollments);
+      
       setEnrolledCourses(enrollments);
       setError("");
     } catch (err) {
-      // If endpoint returns user-specific enrollments, use them directly
-      // Otherwise, try to get all and filter (though backend should handle this)
-      setError("Failed to load enrolled courses");
+      console.error("Error fetching enrollments:", err);
+      console.error("Error response:", err.response);
+      const errorMsg = err.response?.data?.message || err.response?.data || err.message || "Failed to load enrolled courses";
+      setError(errorMsg);
       setEnrolledCourses([]);
     } finally {
       setIsLoading(false);
@@ -54,9 +76,17 @@ export default function MyCourses() {
   };
 
   const getEnrolledCourseIds = () => {
-    return enrolledCourses.map(
-      (enrollment) => enrollment.courseId || enrollment.course?.id
-    );
+    const ids = enrolledCourses.map((enrollment) => {
+      // Try multiple possible structures
+      return enrollment.courseId || 
+             enrollment.course?.id || 
+             enrollment.courseId || 
+             enrollment.id ||
+             null;
+    }).filter(id => id !== null);
+    
+    console.log("Enrolled course IDs:", ids);
+    return ids;
   };
 
   if (isLoading) {
@@ -72,11 +102,31 @@ export default function MyCourses() {
 
   // Get enrolled course IDs
   const enrolledCourseIds = getEnrolledCourseIds();
+  console.log("All courses:", allCourses);
+  console.log("Enrolled course IDs to match:", enrolledCourseIds);
   
   // If enrollments include full course data, use that; otherwise match with allCourses
-  const enrolledCoursesData = enrolledCourses.length > 0 && enrolledCourses[0]?.course
-    ? enrolledCourses.map(e => e.course).filter(Boolean)
-    : allCourses.filter((course) => enrolledCourseIds.includes(course.id));
+  let enrolledCoursesData = [];
+  
+  if (enrolledCourses.length > 0) {
+    // Check if enrollments have nested course objects
+    if (enrolledCourses[0]?.course) {
+      enrolledCoursesData = enrolledCourses.map(e => e.course).filter(Boolean);
+    } else if (enrolledCourses[0]?.courseId !== undefined) {
+      // Match by courseId
+      enrolledCoursesData = allCourses.filter((course) => 
+        enrolledCourseIds.some(id => 
+          id === course.id || 
+          String(id) === String(course.id)
+        )
+      );
+    } else {
+      // Enrollment might be the course itself
+      enrolledCoursesData = enrolledCourses.filter(e => e.title || e.name);
+    }
+  }
+  
+  console.log("Final enrolled courses data:", enrolledCoursesData);
 
   return (
     <div className="dashboard-page">
