@@ -1,0 +1,19 @@
+/* Register page reuses shared auth styles from Login.css.
+   This file only contains any small register-specific overrides if needed. */
+
+.auth-page-register .auth-card {
+  max-width: 440px;
+}
+
+.auth-page-register .auth-layout {
+  padding: 12px 60px 32px;
+}
+
+.auth-page-register .auth-form {
+  gap: 8px;
+}
+
+.auth-page-register .auth-checkbox {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
