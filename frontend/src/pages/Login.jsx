@@ -27,7 +27,7 @@ export default function Login() {
       if (res.data.role === "Admin") {
         navigate("/admin-dashboard");
       } else {
-        navigate("/student-dashboard");
+        navigate("/courses");
       }
     } catch (err) {
       alert(err.response?.data || "Login failed. Please try again.");

@@ -1,0 +1,146 @@
+/* CourseDetails styling matching Login/Register theme */
+
+.course-details-back-btn {
+  margin-bottom: 24px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.course-details-back-btn:hover {
+  background: #f9fafb;
+  border-color: #fbbf24;
+  color: #78350f;
+}
+
+.course-details-card {
+  max-width: 800px;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+}
+
+.course-details-title {
+  margin: 0 0 16px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.course-details-description {
+  margin: 0 0 32px;
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.course-details-info {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 4px;
+  border: 1px solid #f3f4f6;
+}
+
+.course-details-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.course-details-info-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.course-details-info-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.course-details-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.course-details-btn {
+  padding: 12px 24px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.course-details-btn-primary {
+  background: #fbbf24;
+  color: #78350f;
+  box-shadow: 0 16px 35px rgba(251, 191, 36, 0.55);
+}
+
+.course-details-btn-primary:hover:not(:disabled) {
+  background: #facc15;
+}
+
+.course-details-btn-secondary {
+  background: #ffffff;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.course-details-btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #fbbf24;
+}
+
+.course-details-btn-disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.course-details-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .course-details-card {
+    padding: 24px;
+  }
+
+  .course-details-title {
+    font-size: 1.5rem;
+  }
+
+  .course-details-info {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .course-details-actions {
+    flex-direction: column;
+  }
+
+  .course-details-btn {
+    width: 100%;
+  }
+}
+
+
