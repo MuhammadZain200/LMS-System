@@ -55,11 +55,11 @@ function App() {
           }
         />
 
-        {/* Student Routes */}
+        {/* Student Routes (Student or Instructor) */}
         <Route
           path="/courses"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole={"Student,Instructor"}>
               <CourseList />
             </ProtectedRoute>
           }
@@ -67,7 +67,7 @@ function App() {
         <Route
           path="/course-details/:id"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole={"Student,Instructor"}>
               <CourseDetails />
             </ProtectedRoute>
           }
@@ -75,7 +75,7 @@ function App() {
         <Route
           path="/my-courses"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole={"Student,Instructor"}>
               <MyCourses />
             </ProtectedRoute>
           }

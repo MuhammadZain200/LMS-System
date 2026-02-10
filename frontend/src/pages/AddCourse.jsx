@@ -60,7 +60,7 @@ export default function AddCourse() {
 
     setIsLoading(true);
     try {
-      await api.post("/courses", {
+      await api.post("/Course", {
         title: formData.title.trim(),
         description: formData.description.trim(),
         duration: parseFloat(formData.duration),

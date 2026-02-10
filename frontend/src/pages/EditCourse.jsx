@@ -24,7 +24,7 @@ export default function EditCourse() {
   const fetchCourse = async () => {
     try {
       setIsLoadingData(true);
-      const response = await api.get(`/courses/${id}`);
+      const response = await api.get(`/Course/${id}`);
       const course = response.data;
       setFormData({
         title: course.title || "",
@@ -84,7 +84,7 @@ export default function EditCourse() {
 
     setIsLoading(true);
     try {
-      await api.put(`/courses/${id}`, {
+      await api.put(`/Course/${id}`, {
         title: formData.title.trim(),
         description: formData.description.trim(),
         duration: parseFloat(formData.duration),

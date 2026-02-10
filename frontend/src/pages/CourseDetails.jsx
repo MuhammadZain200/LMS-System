@@ -8,10 +8,16 @@ import "../styles/CourseDetails.css";
 export default function CourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [course, setCourse] = useState(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnrolling, setIsEnrolling] = useState(false);
+  const role = localStorage.getItem("role");
+  const isAdmin = role === "Admin";
+
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     fetchCourse();
@@ -24,7 +30,6 @@ export default function CourseDetails() {
       const response = await api.get(`/courses/${id}`);
       setCourse(response.data);
     } catch (err) {
-      alert(err.response?.data || "Failed to load course");
       navigate("/courses");
     } finally {
       setIsLoading(false);
@@ -35,34 +40,37 @@ export default function CourseDetails() {
     try {
       const token = getToken();
       const userId = getUserIdFromToken(token);
-      
-      if (!userId) {
-        return; // Can't check enrollment without userId
-      }
+      if (!userId) return;
 
-      // Backend endpoint: GET /api/enrollments/{userId}
       const response = await api.get(`/enrollments/${userId}`);
       const enrollments = response.data || [];
+
       const enrolled = enrollments.some(
-        (e) => e.courseId === parseInt(id) || e.course?.id === parseInt(id)
+        (e) => e.courseId === Number(id) || e.course?.id === Number(id)
       );
+
       setIsEnrolled(enrolled);
     } catch (err) {
-      // Ignore error - enrollment check is not critical
-      console.error("Error checking enrollment:", err);
+      console.error(err);
     }
   };
 
   const handleEnroll = async () => {
-    if (isEnrolled) return;
+    if (isEnrolled) {
+      setPopupMessage("You are already enrolled in this course.");
+      setShowPopup(true);
+      return;
+    }
 
     try {
       setIsEnrolling(true);
-      await api.post("/enrollments", { courseId: parseInt(id) });
+      await api.post("/enrollments", { courseId: Number(id) });
       setIsEnrolled(true);
-      alert("Successfully enrolled in course!");
+      setPopupMessage("Successfully enrolled in the course!");
+      setShowPopup(true);
     } catch (err) {
-      alert(err.response?.data || "Failed to enroll in course");
+      setPopupMessage("Successfully enrolled in the course!");
+      setShowPopup(true);
     } finally {
       setIsEnrolling(false);
     }
@@ -79,9 +87,7 @@ export default function CourseDetails() {
     );
   }
 
-  if (!course) {
-    return null;
-  }
+  if (!course) return null;
 
   return (
     <div className="dashboard-page">
@@ -100,31 +106,36 @@ export default function CourseDetails() {
 
           <div className="course-details-info">
             <div className="course-details-info-item">
-              <span className="course-details-info-label">Duration:</span>
+              <span className="course-details-info-label">Duration</span>
               <span className="course-details-info-value">
                 {course.duration} hours
               </span>
             </div>
             <div className="course-details-info-item">
-              <span className="course-details-info-label">Price:</span>
+              <span className="course-details-info-label">Price</span>
               <span className="course-details-info-value">${course.price}</span>
             </div>
           </div>
 
           <div className="course-details-actions">
-            {isEnrolled ? (
-              <button className="course-details-btn course-details-btn-disabled" disabled>
-                Already Enrolled
-              </button>
-            ) : (
+            {!isAdmin && (
               <button
                 onClick={handleEnroll}
-                className="course-details-btn course-details-btn-primary"
+                className={`course-details-btn ${
+                  isEnrolled
+                    ? "course-details-btn-disabled"
+                    : "course-details-btn-primary"
+                }`}
                 disabled={isEnrolling}
               >
-                {isEnrolling ? "Enrolling..." : "Enroll Now"}
+                {isEnrolled
+                  ? "Already Enrolled"
+                  : isEnrolling
+                  ? "Enrolling..."
+                  : "Enroll Now"}
               </button>
             )}
+
             <button
               onClick={() => navigate("/my-courses")}
               className="course-details-btn course-details-btn-secondary"
@@ -133,9 +144,22 @@ export default function CourseDetails() {
             </button>
           </div>
         </div>
+
+        {/* ✅ POPUP */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-modal">
+              <p>{popupMessage}</p>
+              <button
+                className="popup-btn"
+                onClick={() => setShowPopup(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-

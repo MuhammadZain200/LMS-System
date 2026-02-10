@@ -35,7 +35,7 @@ export default function CourseList() {
     }
 
     try {
-      await api.delete(`/courses/${courseId}`);
+      await api.delete(`/Course/${courseId}`);
       fetchCourses();
     } catch (err) {
       alert(err.response?.data || "Failed to delete course");
