@@ -15,7 +15,33 @@ export default function EditCourse() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isCheckingTitle, setIsCheckingTitle] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+
+  /**
+   * Check if another course with the same title exists (excluding current course)
+   */
+  const checkCourseTitleExists = async (title) => {
+    try {
+      setIsCheckingTitle(true);
+      const response = await api.get("/courses");
+      const courses = response.data || [];
+      const titleLower = title.toLowerCase().trim();
+      const isDuplicate = courses.some(
+        (course) =>
+          course.title.toLowerCase().trim() === titleLower &&
+          course.id !== Number(id)
+      );
+      return isDuplicate;
+    } catch (err) {
+      console.error("Error checking course title:", err);
+      throw new Error("Failed to check course title. Please try again.");
+    } finally {
+      setIsCheckingTitle(false);
+    }
+  };
 
   useEffect(() => {
     fetchCourse();
@@ -82,6 +108,27 @@ export default function EditCourse() {
       return;
     }
 
+    // Check for duplicate title (excluding current course) before updating
+    try {
+      setIsCheckingTitle(true);
+      const isDuplicate = await checkCourseTitleExists(formData.title);
+
+      if (isDuplicate) {
+        setPopupMessage(
+          "A course with this title already exists. Please choose a different title."
+        );
+        setShowPopup(true);
+        setIsCheckingTitle(false);
+        return;
+      }
+    } catch (err) {
+      setPopupMessage(err.message || "An error occurred while checking the title.");
+      setShowPopup(true);
+      setIsCheckingTitle(false);
+      return;
+    }
+
+    // Update the course
     setIsLoading(true);
     try {
       await api.put(`/Course/${id}`, {
@@ -92,7 +139,19 @@ export default function EditCourse() {
       });
       navigate("/admin-courses");
     } catch (err) {
-      alert(err.response?.data || "Failed to update course");
+      const errorMessage = err.response?.data || "Failed to update course";
+      // Handle server-side duplicate check (race condition)
+      if (
+        errorMessage.toLowerCase().includes("duplicate") ||
+        errorMessage.toLowerCase().includes("already exists")
+      ) {
+        setPopupMessage(
+          "A course with this title already exists. Please choose a different title."
+        );
+      } else {
+        setPopupMessage(errorMessage);
+      }
+      setShowPopup(true);
     } finally {
       setIsLoading(false);
     }
@@ -217,13 +276,32 @@ export default function EditCourse() {
               <button
                 type="submit"
                 className="form-btn form-btn-primary"
-                disabled={isLoading}
+                disabled={isLoading || isCheckingTitle}
               >
-                {isLoading ? "Updating..." : "Update Course"}
+                {isCheckingTitle
+                  ? "Checking title..."
+                  : isLoading
+                  ? "Updating..."
+                  : "Update Course"}
               </button>
             </div>
           </form>
         </div>
+
+        {/* Popup Alert for Duplicate Course */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-modal">
+              <p>{popupMessage}</p>
+              <button
+                className="popup-btn"
+                onClick={() => setShowPopup(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

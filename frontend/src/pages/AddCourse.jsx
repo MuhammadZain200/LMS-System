@@ -13,7 +13,31 @@ export default function AddCourse() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingTitle, setIsCheckingTitle] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+
+  /**
+   * Check if a course with the same title exists in the database
+   */
+  const checkCourseTitleExists = async (title) => {
+    try {
+      setIsCheckingTitle(true);
+      const response = await api.get("/courses");
+      const courses = response.data || [];
+      const titleLower = title.toLowerCase().trim();
+      const isDuplicate = courses.some(
+        (course) => course.title.toLowerCase().trim() === titleLower
+      );
+      return isDuplicate;
+    } catch (err) {
+      console.error("Error checking course title:", err);
+      throw new Error("Failed to check course title. Please try again.");
+    } finally {
+      setIsCheckingTitle(false);
+    }
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -58,6 +82,27 @@ export default function AddCourse() {
       return;
     }
 
+    // Check for duplicate title before creating
+    try {
+      setIsCheckingTitle(true);
+      const isDuplicate = await checkCourseTitleExists(formData.title);
+
+      if (isDuplicate) {
+        setPopupMessage(
+          "A course with this title already exists. Please choose a different title."
+        );
+        setShowPopup(true);
+        setIsCheckingTitle(false);
+        return;
+      }
+    } catch (err) {
+      setPopupMessage(err.message || "An error occurred while checking the title.");
+      setShowPopup(true);
+      setIsCheckingTitle(false);
+      return;
+    }
+
+    // Create the course
     setIsLoading(true);
     try {
       await api.post("/Course", {
@@ -68,7 +113,19 @@ export default function AddCourse() {
       });
       navigate("/admin-courses");
     } catch (err) {
-      alert(err.response?.data || "Failed to create course");
+      const errorMessage = err.response?.data || "Failed to create course";
+      // Handle server-side duplicate check (race condition)
+      if (
+        errorMessage.toLowerCase().includes("duplicate") ||
+        errorMessage.toLowerCase().includes("already exists")
+      ) {
+        setPopupMessage(
+          "A course with this title already exists. Please choose a different title."
+        );
+      } else {
+        setPopupMessage(errorMessage);
+      }
+      setShowPopup(true);
     } finally {
       setIsLoading(false);
     }
@@ -182,13 +239,32 @@ export default function AddCourse() {
               <button
                 type="submit"
                 className="form-btn form-btn-primary"
-                disabled={isLoading}
+                disabled={isLoading || isCheckingTitle}
               >
-                {isLoading ? "Creating..." : "Create Course"}
+                {isCheckingTitle
+                  ? "Checking title..."
+                  : isLoading
+                  ? "Creating..."
+                  : "Create Course"}
               </button>
             </div>
           </form>
         </div>
+
+        {/* Popup Alert for Duplicate Course */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-modal">
+              <p>{popupMessage}</p>
+              <button
+                className="popup-btn"
+                onClick={() => setShowPopup(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
