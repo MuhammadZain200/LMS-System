@@ -69,7 +69,7 @@ export default function CourseDetails() {
       setPopupMessage("Successfully enrolled in the course!");
       setShowPopup(true);
     } catch (err) {
-      setPopupMessage("Successfully enrolled in the course!");
+      setPopupMessage("Already enrolled in this course");
       setShowPopup(true);
     } finally {
       setIsEnrolling(false);
