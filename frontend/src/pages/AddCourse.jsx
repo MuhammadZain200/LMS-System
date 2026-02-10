@@ -10,6 +10,7 @@ export default function AddCourse() {
     description: "",
     duration: "",
     price: "",
+    content: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -110,6 +111,7 @@ export default function AddCourse() {
         description: formData.description.trim(),
         duration: parseFloat(formData.duration),
         price: parseFloat(formData.price),
+        content: formData.content?.trim() || null,
       });
       navigate("/admin-courses");
     } catch (err) {
@@ -180,6 +182,21 @@ export default function AddCourse() {
               {errors.description && (
                 <span className="form-error">{errors.description}</span>
               )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="content">
+                Course Content (optional)
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                className="form-input form-textarea"
+                placeholder="Add an outline, syllabus, or course notes..."
+                rows="6"
+                value={formData.content}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-row">

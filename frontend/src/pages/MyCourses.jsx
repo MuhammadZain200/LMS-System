@@ -8,14 +8,41 @@ import "../styles/CourseList.css";
 export default function MyCourses() {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [instructorCourses, setInstructorCourses] = useState([]);
+  const [courseStudents, setCourseStudents] = useState({}); // courseId -> students[]
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const isInstructor = role === "Instructor";
 
   useEffect(() => {
-    fetchEnrolledCourses();
-    fetchAllCourses();
+    if (isInstructor) {
+      fetchInstructorCourses();
+    } else {
+      fetchEnrolledCourses();
+      fetchAllCourses();
+    }
   }, []);
+
+  const fetchInstructorCourses = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get("/Instructor/my-courses");
+      setInstructorCourses(response.data || []);
+      setError("");
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data ||
+        err.message ||
+        "Failed to load your courses";
+      setError(errorMsg);
+      setInstructorCourses([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchEnrolledCourses = async () => {
     try {
@@ -65,6 +92,22 @@ export default function MyCourses() {
     }
   };
 
+  const fetchCourseStudents = async (courseId) => {
+    try {
+      const response = await api.get(`/Instructor/courses/${courseId}/students`);
+      setCourseStudents((prev) => ({
+        ...prev,
+        [courseId]: response.data || [],
+      }));
+    } catch (err) {
+      alert(
+        err.response?.data?.message ||
+          err.response?.data ||
+          "Failed to load students for this course"
+      );
+    }
+  };
+
   const handleEnroll = async (courseId) => {
     try {
       await api.post("/enrollments", { courseId });
@@ -100,32 +143,105 @@ export default function MyCourses() {
     );
   }
 
-  // Get enrolled course IDs
+  // Instructor view: show own courses and management actions
+  if (isInstructor) {
+    return (
+      <div className="dashboard-page">
+        <Navbar />
+        <div className="dashboard-container">
+          <div className="course-list-header">
+            <h1 className="dashboard-title">My Courses (Instructor)</h1>
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          {instructorCourses.length === 0 ? (
+            <div className="empty-state">
+              <p>You are not assigned to any courses yet.</p>
+            </div>
+          ) : (
+            <div className="course-grid">
+              {instructorCourses.map((course) => (
+                <div key={course.id} className="course-card">
+                  <div className="course-card-content">
+                    <h2 className="course-card-title">{course.title}</h2>
+                    <p className="course-card-description">
+                      {course.description}
+                    </p>
+                    <div className="course-card-details">
+                      <span className="course-card-detail">
+                        Duration: {course.duration} hours
+                      </span>
+                      <span className="course-card-detail">
+                        Price: ${course.price}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="course-card-actions">
+                    <button
+                      className="course-card-btn course-card-btn-primary"
+                      onClick={() => navigate(`/course-details/${course.id}`)}
+                    >
+                      Manage Content
+                    </button>
+                    <button
+                      className="course-card-btn"
+                      onClick={() => fetchCourseStudents(course.id)}
+                    >
+                      View Students
+                    </button>
+                  </div>
+
+                  {courseStudents[course.id] && (
+                    <div className="course-card-details" style={{ marginTop: 12 }}>
+                      <strong>Enrolled Students:</strong>
+                      {courseStudents[course.id].length === 0 ? (
+                        <p style={{ marginTop: 4 }}>No students enrolled yet.</p>
+                      ) : (
+                        <ul style={{ marginTop: 4 }}>
+                          {courseStudents[course.id].map((s) => (
+                            <li key={s.id}>
+                              {s.name} ({s.email})
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Student view: derive enrolled courses from enrollments
   const enrolledCourseIds = getEnrolledCourseIds();
   console.log("All courses:", allCourses);
   console.log("Enrolled course IDs to match:", enrolledCourseIds);
-  
+
   // If enrollments include full course data, use that; otherwise match with allCourses
   let enrolledCoursesData = [];
-  
+
   if (enrolledCourses.length > 0) {
     // Check if enrollments have nested course objects
     if (enrolledCourses[0]?.course) {
-      enrolledCoursesData = enrolledCourses.map(e => e.course).filter(Boolean);
+      enrolledCoursesData = enrolledCourses.map((e) => e.course).filter(Boolean);
     } else if (enrolledCourses[0]?.courseId !== undefined) {
       // Match by courseId
-      enrolledCoursesData = allCourses.filter((course) => 
-        enrolledCourseIds.some(id => 
-          id === course.id || 
-          String(id) === String(course.id)
+      enrolledCoursesData = allCourses.filter((course) =>
+        enrolledCourseIds.some(
+          (id) => id === course.id || String(id) === String(course.id)
         )
       );
     } else {
       // Enrollment might be the course itself
-      enrolledCoursesData = enrolledCourses.filter(e => e.title || e.name);
+      enrolledCoursesData = enrolledCourses.filter((e) => e.title || e.name);
     }
   }
-  
+
   console.log("Final enrolled courses data:", enrolledCoursesData);
 
   return (

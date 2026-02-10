@@ -36,7 +36,8 @@ namespace backend.Controllers
                 Title = dto.Title,
                 Description = dto.Description,
                 Duration = dto.DurationInHours,
-                Price = dto.Price
+                Price = dto.Price,
+                Content = dto.Content
             };
 
             _context.Courses.Add(course);
@@ -57,6 +58,7 @@ namespace backend.Controllers
             course.Duration = dto.DurationInHours;
             course.Price = dto.Price;
             course.Instructor = dto.Instructor;
+            course.Content = dto.Content ?? course.Content;
 
             await _context.SaveChangesAsync();
 
@@ -74,6 +76,56 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Course deleted successfully" });
+        }
+
+        /// <summary>
+        /// Assign an instructor user to a course.
+        /// Only Admins can call this endpoint.
+        /// Accepts either instructor ID or email.
+        /// </summary>
+        [HttpPut("{id}/assign-instructor")]
+        public async Task<IActionResult> AssignInstructor(int id, [FromBody] AssignInstructorDTO dto)
+        {
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null) return NotFound("Course not found");
+
+            if (dto == null || (dto.InstructorId <= 0 && string.IsNullOrWhiteSpace(dto.InstructorEmail)))
+            {
+                return BadRequest("InstructorId or InstructorEmail is required");
+            }
+
+            IQueryable<User> query = _context.Users.Where(u => u.Role == "Instructor");
+
+            if (dto.InstructorId > 0)
+            {
+                query = query.Where(u => u.Id == dto.InstructorId);
+            }
+            else if (!string.IsNullOrWhiteSpace(dto.InstructorEmail))
+            {
+                var normalizedEmail = dto.InstructorEmail.Trim().ToLower();
+                query = query.Where(u => u.Email.ToLower() == normalizedEmail);
+            }
+
+            var instructor = await query.FirstOrDefaultAsync();
+
+            if (instructor == null)
+            {
+                return BadRequest("Invalid instructor ID or user is not an instructor");
+            }
+
+            // Persist both the FK and the human-readable name for existing UI
+            course.InstructorId = instructor.Id;
+            course.Instructor = instructor.Name;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Instructor assigned successfully",
+                courseId = course.Id,
+                instructorId = instructor.Id,
+                instructorName = instructor.Name
+            });
         }
     }
 }

@@ -42,6 +42,30 @@ export default function CourseList() {
     }
   };
 
+  const handleAssignInstructor = async (course) => {
+    const email = window.prompt(
+      "Enter the instructor's email to assign to this course:",
+      ""
+    );
+
+    if (!email) {
+      return;
+    }
+
+    try {
+      await api.put(`/Course/${course.id}/assign-instructor`, {
+        instructorEmail: email,
+      });
+      fetchCourses();
+    } catch (err) {
+      alert(
+        err.response?.data?.message ||
+          err.response?.data ||
+          "Failed to assign instructor"
+      );
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="dashboard-page">
@@ -93,6 +117,11 @@ export default function CourseList() {
                     <span className="course-card-detail">
                       Price: ${course.price}
                     </span>
+                    {isAdmin && (
+                      <span className="course-card-detail">
+                        Instructor: {course.instructor || "Not assigned"}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {isAdmin ? (
@@ -103,6 +132,12 @@ export default function CourseList() {
                     >
                       Edit
                     </Link>
+                    <button
+                      onClick={() => handleAssignInstructor(course)}
+                      className="course-card-btn"
+                    >
+                      Assign Instructor
+                    </button>
                     <button
                       onClick={() => handleDelete(course.id)}
                       className="course-card-btn course-card-btn-danger"

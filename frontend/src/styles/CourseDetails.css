@@ -192,3 +192,96 @@
   from {opacity: 0; transform: scale(0.95);}
   to {opacity: 1; transform: scale(1);}
 }
+
+/* =============================== */
+/* COURSE CONTENT + CLASSMATES + ANNOUNCEMENTS */
+
+.course-details-content {
+  margin-top: 12px;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #4b5563;
+  white-space: pre-wrap;
+}
+
+.course-details-content-empty {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.course-details-content-textarea {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.course-details-content-textarea:focus {
+  outline: none;
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1px #fbbf24;
+}
+
+.course-details-classmates-list {
+  margin-top: 8px;
+  padding-left: 18px;
+  color: #4b5563;
+}
+
+.course-details-announcements-list {
+  margin-top: 12px;
+  list-style: none;
+  padding: 0;
+}
+
+.course-details-announcement-item {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.course-details-announcement-item h3 {
+  margin: 0 0 4px;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.course-details-announcement-item p {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.course-details-announcement-item small {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.course-details-announcement-form {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-details-announcement-input,
+.course-details-announcement-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.course-details-announcement-input:focus,
+.course-details-announcement-textarea:focus {
+  outline: none;
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1px #fbbf24;
+}

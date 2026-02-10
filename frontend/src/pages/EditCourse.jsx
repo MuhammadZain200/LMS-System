@@ -11,6 +11,7 @@ export default function EditCourse() {
     description: "",
     duration: "",
     price: "",
+    content: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +58,7 @@ export default function EditCourse() {
         description: course.description || "",
         duration: course.duration?.toString() || "",
         price: course.price?.toString() || "",
+        content: course.content || "",
       });
     } catch (err) {
       alert(err.response?.data || "Failed to load course");
@@ -136,6 +138,7 @@ export default function EditCourse() {
         description: formData.description.trim(),
         duration: parseFloat(formData.duration),
         price: parseFloat(formData.price),
+        content: formData.content?.trim() || null,
       });
       navigate("/admin-courses");
     } catch (err) {
@@ -217,6 +220,21 @@ export default function EditCourse() {
               {errors.description && (
                 <span className="form-error">{errors.description}</span>
               )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="content">
+                Course Content (optional)
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                className="form-input form-textarea"
+                placeholder="Add an outline, syllabus, or course notes..."
+                rows="6"
+                value={formData.content}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-row">

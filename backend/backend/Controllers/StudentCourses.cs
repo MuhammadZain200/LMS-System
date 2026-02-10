@@ -44,11 +44,15 @@ namespace backend.Controllers
         }
 
         // GET: api/courses/{id}
-        // View details of a single course with enrollment status
+        // View details of a single course with enrollment status, content
+        // (only if enrolled) and classmates list.
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourse(int id)
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var isEnrolled = await _context.Enrollments
+                .AnyAsync(e => e.CourseID == id && e.UserID == userId);
 
             var course = await _context.Courses
                 .Where(c => c.Id == id)
@@ -60,7 +64,23 @@ namespace backend.Controllers
                     c.Duration,
                     c.Price,
                     Enrolled = _context.Enrollments
-                        .Any(e => e.CourseID == c.Id && e.UserID == userId)
+                        .Any(e => e.CourseID == c.Id && e.UserID == userId),
+
+                    // Only expose content to students who are enrolled
+                    Content = isEnrolled ? c.Content : null,
+
+                    // Basic list of classmates (students only) when enrolled
+                    Classmates = isEnrolled
+                        ? _context.Enrollments
+                            .Where(e => e.CourseID == c.Id)
+                            .Select(e => new
+                            {
+                                e.User.Id,
+                                e.User.Name,
+                                e.User.Email
+                            })
+                            .ToList()
+                        : new List<object>()
                 })
                 .FirstOrDefaultAsync();
 
