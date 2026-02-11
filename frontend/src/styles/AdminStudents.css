@@ -1,0 +1,148 @@
+/* Minimal styles for AdminStudents page, consistent with existing dashboard theme */
+
+.admin-students-header {
+  margin-bottom: 16px;
+}
+
+.admin-students-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #f3f4f6;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+}
+
+.admin-students-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-students-table th,
+.admin-students-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+.admin-students-table th {
+  font-weight: 700;
+  background: #f9fafb;
+}
+
+.admin-students-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-students-btn {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+}
+
+.admin-students-btn:hover {
+  border-color: #fbbf24;
+}
+
+.admin-students-btn-primary {
+  background: #fbbf24;
+  border-color: #fbbf24;
+  color: #78350f;
+}
+
+.admin-students-btn-danger {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.admin-students-btn-secondary {
+  background: #f9fafb;
+}
+
+.admin-students-btn-link {
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  padding: 6px 8px;
+}
+
+.admin-students-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.admin-students-status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-students-status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-students-enrollments {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+}
+
+.admin-students-enrollments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-students-enrollments-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.admin-students-enrollments-header h2 span {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.admin-students-enrollments-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-students-enrollment-item {
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.admin-students-enrollment-title {
+  font-weight: 700;
+  color: #111827;
+}
+
+.admin-students-enrollment-date {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+

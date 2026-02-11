@@ -127,5 +127,84 @@ namespace backend.Controllers
                 instructorName = instructor.Name
             });
         }
+
+        /// <summary>
+        /// Get all student accounts.
+        /// Only Admins can access this endpoint.
+        /// </summary>
+        // GET: api/courses/students
+        [HttpGet("students")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            var students = await _context.Users
+                .Where(u => u.Role == "Student")
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Name,
+                    u.Email,
+                    u.IsActive
+                })
+                .ToListAsync();
+
+            return Ok(students);
+        }
+
+
+        [HttpPut("students/{id}/status")]
+        public async Task<IActionResult> UpdateStudentStatus(int id, [FromQuery] bool isActive)
+        {
+            var student = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id && u.Role == "Student");
+
+            if (student == null)
+                return NotFound("Student not found");
+
+            student.IsActive = isActive;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Student status updated" });
+        }
+
+      
+        [HttpGet("students/{studentId}/enrollments")]
+        public async Task<IActionResult> GetStudentEnrollments(int studentId)
+        {
+            var enrollments = await _context.Enrollments
+                .Where(e => e.UserID == studentId)
+                .Include(e => e.Course)
+                .Select(e => new
+                {
+                    CourseId = e.Course.Id,
+                    CourseTitle = e.Course.Title,  // Add this property in EnrollmentDTO
+                    EnrollDate = e.EnrolledAt      // Add this property in EnrollmentDTO
+                })
+                .ToListAsync();
+
+            return Ok(enrollments);
+        }
+
+
+        
+        [HttpGet("courses/{courseId}/students")]
+        public async Task<IActionResult> GetStudentsByCourse(int courseId)
+        {
+            var students = await _context.Enrollments
+                .Where(e => e.CourseID == courseId)
+                .Include(e => e.User)
+                .Select(e => new
+                {
+                    e.User.Id,
+                    e.User.Name,
+                    e.User.Email
+                })
+                .ToListAsync();
+
+            return Ok(students);
+        }
+
+
+
+
     }
 }

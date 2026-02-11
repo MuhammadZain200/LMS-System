@@ -32,6 +32,9 @@ export default function Navbar() {
               <Link to="/admin-courses" className="navbar-link">
                 Courses
               </Link>
+              <Link to="/admin-students" className="navbar-link">
+                Students
+              </Link>
             </>
           ) : (
             <>

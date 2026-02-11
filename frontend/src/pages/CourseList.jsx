@@ -8,6 +8,8 @@ export default function CourseList() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [courseStudents, setCourseStudents] = useState({}); // courseId -> students[]
+  const [loadingCourseStudents, setLoadingCourseStudents] = useState({}); // courseId -> boolean
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
   const isAdmin = role === "Admin";
@@ -63,6 +65,34 @@ export default function CourseList() {
           err.response?.data ||
           "Failed to assign instructor"
       );
+    }
+  };
+
+  const handleViewStudents = async (courseId) => {
+    // Toggle off if already loaded & visible
+    if (courseStudents[courseId]) {
+      setCourseStudents((prev) => {
+        const copy = { ...prev };
+        delete copy[courseId];
+        return copy;
+      });
+      return;
+    }
+
+    try {
+      setLoadingCourseStudents((prev) => ({ ...prev, [courseId]: true }));
+      // Backend: GET /api/Course/courses/{courseId}/students (CourseController)
+      const res = await api.get(`/Course/courses/${courseId}/students`);
+      setCourseStudents((prev) => ({ ...prev, [courseId]: res.data || [] }));
+    } catch (err) {
+      console.error("Failed to load students for course:", err);
+      alert(
+        err.response?.data?.message ||
+          err.response?.data ||
+          "Failed to load students for this course"
+      );
+    } finally {
+      setLoadingCourseStudents((prev) => ({ ...prev, [courseId]: false }));
     }
   };
 
@@ -139,6 +169,16 @@ export default function CourseList() {
                       Assign Instructor
                     </button>
                     <button
+                      onClick={() => handleViewStudents(course.id)}
+                      className="course-card-btn"
+                    >
+                      {loadingCourseStudents[course.id]
+                        ? "Loading..."
+                        : courseStudents[course.id]
+                        ? "Hide Students"
+                        : "View Students"}
+                    </button>
+                    <button
                       onClick={() => handleDelete(course.id)}
                       className="course-card-btn course-card-btn-danger"
                     >
@@ -153,6 +193,24 @@ export default function CourseList() {
                     >
                       View Details
                     </Link>
+                  </div>
+                )}
+
+                {/* Admin-only: show enrolled students for this course */}
+                {isAdmin && courseStudents[course.id] && (
+                  <div className="course-card-details" style={{ marginTop: 12 }}>
+                    <strong>Enrolled Students:</strong>
+                    {courseStudents[course.id].length === 0 ? (
+                      <p style={{ marginTop: 4 }}>No students enrolled yet.</p>
+                    ) : (
+                      <ul style={{ marginTop: 4 }}>
+                        {courseStudents[course.id].map((s) => (
+                          <li key={s.id}>
+                            {s.name} ({s.email})
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
               </div>

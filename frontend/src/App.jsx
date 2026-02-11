@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminStudents from "./pages/AdminStudents";
 import CourseList from "./pages/CourseList";
 import AddCourse from "./pages/AddCourse";
 import EditCourse from "./pages/EditCourse";
@@ -35,6 +36,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="Admin">
               <CourseList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-students"
+          element={
+            <ProtectedRoute requiredRole="Admin">
+              <AdminStudents />
             </ProtectedRoute>
           }
         />

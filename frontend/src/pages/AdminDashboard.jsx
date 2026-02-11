@@ -24,6 +24,14 @@ export default function AdminDashboard() {
             </p>
           </Link>
 
+          <Link to="/admin-students" className="dashboard-card">
+            <div className="dashboard-card-icon">👥</div>
+            <h2 className="dashboard-card-title">Manage Students</h2>
+            <p className="dashboard-card-description">
+              View accounts, activate/deactivate, and view enrollments
+            </p>
+          </Link>
+
           <Link to="/add-course" className="dashboard-card">
             <div className="dashboard-card-icon">➕</div>
             <h2 className="dashboard-card-title">Add New Course</h2>

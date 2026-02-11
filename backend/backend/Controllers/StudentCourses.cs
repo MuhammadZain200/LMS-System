@@ -1,4 +1,5 @@
 ﻿using backend.Data;
+using backend.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -73,14 +74,14 @@ namespace backend.Controllers
                     Classmates = isEnrolled
                         ? _context.Enrollments
                             .Where(e => e.CourseID == c.Id)
-                            .Select(e => new
+                            .Select(e => new ClassmateDTO
                             {
-                                e.User.Id,
-                                e.User.Name,
-                                e.User.Email
+                                Id = e.User.Id,
+                                Name = e.User.Name,
+                                Email = e.User.Email
                             })
                             .ToList()
-                        : new List<object>()
+                        : new List<ClassmateDTO>()
                 })
                 .FirstOrDefaultAsync();
 

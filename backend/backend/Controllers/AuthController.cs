@@ -58,6 +58,12 @@ namespace backend.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email);
             if (user == null) return Unauthorized("Invalid credentials");
 
+            //Prevents disabled accounts to login
+            if (!user.IsActive)
+            {
+                return Unauthorized("Account is deactivated. Contact admin.");
+            }
+
             if (!BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
                 return Unauthorized("Invalid credentials");
 
