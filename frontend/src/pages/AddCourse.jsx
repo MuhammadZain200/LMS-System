@@ -106,13 +106,17 @@ export default function AddCourse() {
     // Create the course
     setIsLoading(true);
     try {
-      await api.post("/Course", {
+      const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        duration: parseFloat(formData.duration),
-        price: parseFloat(formData.price),
+        durationInHours: Number(formData.duration),
+        price: Number(formData.price),
         content: formData.content?.trim() || null,
-      });
+      };
+
+      console.log("Create course payload", payload);
+
+      await api.post("/Course", payload);
       navigate("/admin-courses");
     } catch (err) {
       const errorMessage = err.response?.data || "Failed to create course";
