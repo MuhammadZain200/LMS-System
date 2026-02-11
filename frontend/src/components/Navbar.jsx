@@ -30,16 +30,25 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <Link to="/admin-courses" className="navbar-link">
-                Courses
+                Manage Courses
               </Link>
               <Link to="/admin-students" className="navbar-link">
                 Students
               </Link>
             </>
+          ) : role === "Instructor" ? (
+            <>
+              <Link to="/courses" className="navbar-link">
+                Browse Courses
+              </Link>
+              <Link to="/my-courses" className="navbar-link">
+                My Teaching
+              </Link>
+            </>
           ) : (
             <>
               <Link to="/courses" className="navbar-link">
-                Courses
+                Browse Courses
               </Link>
               <Link to="/my-courses" className="navbar-link">
                 My Courses

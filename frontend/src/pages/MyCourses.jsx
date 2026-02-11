@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
-import { getToken, getUserIdFromToken, decodeToken } from "../utils/auth";
+import { getToken, getUserIdFromToken } from "../utils/auth";
 import "../styles/CourseList.css";
 
 export default function MyCourses() {
@@ -50,14 +50,7 @@ export default function MyCourses() {
       const token = getToken();
       const userId = getUserIdFromToken(token);
       
-      // Debug logging
-      console.log("Token:", token ? "Present" : "Missing");
-      console.log("Extracted userId:", userId);
-      
       if (!userId) {
-        // Try to decode and show what's in the token
-        const decoded = decodeToken(token);
-        console.log("Decoded token:", decoded);
         setError("Unable to get user ID from token. Please login again.");
         setEnrolledCourses([]);
         return;
@@ -68,8 +61,6 @@ export default function MyCourses() {
       console.log("Enrollments response:", response.data);
       
       const enrollments = Array.isArray(response.data) ? response.data : [];
-      console.log("Processed enrollments:", enrollments);
-      
       setEnrolledCourses(enrollments);
       setError("");
     } catch (err) {
@@ -119,17 +110,9 @@ export default function MyCourses() {
   };
 
   const getEnrolledCourseIds = () => {
-    const ids = enrolledCourses.map((enrollment) => {
-      // Try multiple possible structures
-      return enrollment.courseId || 
-             enrollment.course?.id || 
-             enrollment.courseId || 
-             enrollment.id ||
-             null;
-    }).filter(id => id !== null);
-    
-    console.log("Enrolled course IDs:", ids);
-    return ids;
+    return enrolledCourses
+      .map((e) => e.courseId || e.course?.id || e.id)
+      .filter((id) => id != null);
   };
 
   if (isLoading) {
@@ -150,7 +133,10 @@ export default function MyCourses() {
         <Navbar />
         <div className="dashboard-container">
           <div className="course-list-header">
-            <h1 className="dashboard-title">My Courses (Instructor)</h1>
+            <h1 className="dashboard-title">My Teaching</h1>
+            <p className="dashboard-subtitle" style={{ marginTop: 4 }}>
+              Courses you teach — manage content and view enrolled students
+            </p>
           </div>
 
           {error && <div className="error-message">{error}</div>}
@@ -193,15 +179,16 @@ export default function MyCourses() {
                   </div>
 
                   {courseStudents[course.id] && (
-                    <div className="course-card-details" style={{ marginTop: 12 }}>
-                      <strong>Enrolled Students:</strong>
+                    <div className="instructor-enrolled-section">
+                      <h3 className="instructor-enrolled-title">Enrolled Students</h3>
                       {courseStudents[course.id].length === 0 ? (
-                        <p style={{ marginTop: 4 }}>No students enrolled yet.</p>
+                        <p className="instructor-enrolled-empty">No students enrolled yet.</p>
                       ) : (
-                        <ul style={{ marginTop: 4 }}>
+                        <ul className="instructor-enrolled-list">
                           {courseStudents[course.id].map((s) => (
                             <li key={s.id}>
-                              {s.name} ({s.email})
+                              <span className="instructor-enrolled-name">{s.name}</span>
+                              <span className="instructor-enrolled-email">{s.email}</span>
                             </li>
                           ))}
                         </ul>
@@ -219,8 +206,6 @@ export default function MyCourses() {
 
   // Student view: derive enrolled courses from enrollments
   const enrolledCourseIds = getEnrolledCourseIds();
-  console.log("All courses:", allCourses);
-  console.log("Enrolled course IDs to match:", enrolledCourseIds);
 
   // If enrollments include full course data, use that; otherwise match with allCourses
   let enrolledCoursesData = [];
@@ -241,8 +226,6 @@ export default function MyCourses() {
       enrolledCoursesData = enrolledCourses.filter((e) => e.title || e.name);
     }
   }
-
-  console.log("Final enrolled courses data:", enrolledCoursesData);
 
   return (
     <div className="dashboard-page">
@@ -281,9 +264,12 @@ export default function MyCourses() {
                   </div>
                 </div>
                 <div className="course-card-actions">
-                  <button className="course-card-btn course-card-btn-primary" disabled>
-                    Enrolled
-                  </button>
+                  <Link
+                    to={`/course-details/${course.id}`}
+                    className="course-card-btn course-card-btn-primary"
+                  >
+                    View Course
+                  </Link>
                 </div>
               </div>
             ))}

@@ -1,19 +1,6 @@
-/* CourseList styling matching Login/Register theme */
+/* Admin Course Management - clean layout, all buttons visible */
 
-.dashboard-title {
-  margin: 0 0 8px;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.dashboard-subtitle {
-  margin: 0;
-  font-size: 1rem;
-  color: #6b7280;
-}
-
-.course-list-header {
+.admin-courses-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,7 +9,7 @@
   gap: 16px;
 }
 
-.course-list-add-btn {
+.admin-courses-add-btn {
   padding: 10px 20px;
   border-radius: 4px;
   border: none;
@@ -31,51 +18,43 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  box-shadow: 0 16px 35px rgba(251, 191, 36, 0.55);
   text-decoration: none;
   display: inline-block;
   transition: background 0.15s ease;
 }
 
-.course-list-add-btn:hover {
+.admin-courses-add-btn:hover {
   background: #facc15;
 }
 
-.course-grid {
+.admin-courses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 24px;
 }
 
-.course-card {
+.admin-course-card {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #f3f4f6;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.course-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.16);
-}
-
-.course-card-content {
+.admin-course-card-content {
   padding: 24px;
-  flex: 1;
 }
 
-.course-card-title {
+.admin-course-card-title {
   margin: 0 0 12px;
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;
 }
 
-.course-card-description {
+.admin-course-card-description {
   margin: 0 0 16px;
   font-size: 0.9rem;
   color: #6b7280;
@@ -86,106 +65,98 @@
   overflow: hidden;
 }
 
-.course-card-details {
+.admin-course-card-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
-}
-
-.course-card-detail {
+  gap: 6px;
   font-size: 0.85rem;
   color: #4b5563;
-  font-weight: 600;
 }
 
-.course-card-enrolled-badge {
-  color: #166534;
-  background: #dcfce7;
-  padding: 2px 8px;
-  border-radius: 999px;
-  display: inline-block;
-  font-size: 0.8rem;
-}
-
-.course-card-actions {
-  padding: 16px 24px;
+/* Buttons: wrap so all are visible, no truncation */
+.admin-course-card-actions {
+  padding: 16px 20px;
   border-top: 1px solid #f3f4f6;
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.course-card-btn {
-  flex: 1;
+.admin-course-btn {
+  flex: 0 0 auto;
   padding: 10px 16px;
   border-radius: 4px;
-  border: none;
+  border: 1px solid #e5e7eb;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
   text-decoration: none;
   display: inline-block;
   text-align: center;
+  background: #ffffff;
+  color: #374151;
 }
 
-.course-card-btn-primary {
-  background: #fbbf24;
+.admin-course-btn:hover {
+  border-color: #fbbf24;
   color: #78350f;
-  box-shadow: 0 16px 35px rgba(251, 191, 36, 0.55);
 }
 
-.course-card-btn-primary:hover:not(:disabled) {
+.admin-course-btn-primary {
+  background: #fbbf24;
+  border-color: #fbbf24;
+  color: #78350f;
+}
+
+.admin-course-btn-primary:hover {
   background: #facc15;
 }
 
-.course-card-btn-danger {
-  background: #ffffff;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+.admin-course-btn-default {
+  background: #f9fafb;
 }
 
-.course-card-btn-danger:hover {
+.admin-course-btn-danger {
   background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.admin-course-btn-danger:hover {
+  background: #fee2e2;
   border-color: #f87171;
 }
 
-.course-card-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Instructor: enrolled students section (My Teaching page) */
-.instructor-enrolled-section {
-  margin: 0 24px 24px;
+/* Enrolled Students - clean card section */
+.admin-course-enrolled {
+  margin: 0 20px 20px;
   padding: 16px;
   background: #f9fafb;
   border-radius: 6px;
   border: 1px solid #e5e7eb;
 }
 
-.instructor-enrolled-title {
+.admin-course-enrolled-title {
   margin: 0 0 12px;
   font-size: 0.9rem;
   font-weight: 700;
   color: #374151;
 }
 
-.instructor-enrolled-empty {
+.admin-course-enrolled-empty {
   margin: 0;
   font-size: 0.9rem;
   color: #6b7280;
 }
 
-.instructor-enrolled-list {
+.admin-course-enrolled-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.instructor-enrolled-list li {
+.admin-course-enrolled-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -198,38 +169,26 @@
   font-size: 0.9rem;
 }
 
-.instructor-enrolled-list li:last-child {
+.admin-course-enrolled-list li:last-child {
   margin-bottom: 0;
 }
 
-.instructor-enrolled-name {
+.admin-course-enrolled-name {
   font-weight: 600;
   color: #111827;
 }
 
-.instructor-enrolled-email {
+.admin-course-enrolled-email {
   color: #6b7280;
   font-size: 0.85rem;
 }
 
 @media (max-width: 768px) {
-  .course-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .course-card-content {
-    padding: 20px;
-  }
-
-  .course-card-actions {
-    padding: 12px 20px;
+  .admin-course-card-actions {
     flex-direction: column;
   }
 
-  .course-card-btn {
+  .admin-course-btn {
     width: 100%;
   }
 }
-
-

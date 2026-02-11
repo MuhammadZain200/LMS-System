@@ -1,4 +1,4 @@
-﻿using backend.Data;
+using backend.Data;
 using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,12 +19,21 @@ namespace backend.Controllers
             _context = context;
         }
 
-        // GET: api/courses
+        // GET: api/Course
         [HttpGet]
         public async Task<IActionResult> GetCourses()
         {
             var courses = await _context.Courses.ToListAsync();
             return Ok(courses);
+        }
+
+        // GET: api/Course/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCourse(int id)
+        {
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null) return NotFound("Course not found");
+            return Ok(course);
         }
 
         // POST: api/courses
@@ -202,9 +211,5 @@ namespace backend.Controllers
 
             return Ok(students);
         }
-
-
-
-
     }
 }
