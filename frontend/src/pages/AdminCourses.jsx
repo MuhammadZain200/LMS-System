@@ -1,19 +1,17 @@
-/**
- * Admin-only: Course Management
- * - View all courses, add/edit/delete, assign instructor, view enrolled students
- */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import "../styles/AdminCourses.css";
+import ViewStudents from "../components/ViewStudents";
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [courseStudents, setCourseStudents] = useState({});
   const [loadingCourseStudents, setLoadingCourseStudents] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);  // controls modal
+  const [selectedCourseStudents, setSelectedCourseStudents] = useState([]); // students for selected course
 
   useEffect(() => {
     fetchCourses();
@@ -43,34 +41,14 @@ export default function AdminCourses() {
     }
   };
 
-  const handleAssignInstructor = async (course) => {
-    const email = window.prompt("Enter the instructor's email to assign to this course:", "");
-    if (!email?.trim()) return;
-    try {
-      await api.put(`/Course/${course.id}/assign-instructor`, {
-        instructorEmail: email.trim(),
-      });
-      fetchCourses();
-    } catch (err) {
-      alert(err.response?.data?.message || err.response?.data || "Failed to assign instructor");
-    }
-  };
-
   const handleViewStudents = async (courseId) => {
-    if (courseStudents[courseId]) {
-      setCourseStudents((prev) => {
-        const copy = { ...prev };
-        delete copy[courseId];
-        return copy;
-      });
-      return;
-    }
     try {
       setLoadingCourseStudents((prev) => ({ ...prev, [courseId]: true }));
       const res = await api.get(`/Course/courses/${courseId}/students`);
-      setCourseStudents((prev) => ({ ...prev, [courseId]: res.data || [] }));
+      setSelectedCourseStudents(res.data || []); // store students
+      setIsModalOpen(true);                       // open modal
     } catch (err) {
-      alert(err.response?.data?.message || err.response?.data || "Failed to load students");
+      alert(err.response?.data?.message ||  "Failed to load students");
     } finally {
       setLoadingCourseStudents((prev) => ({ ...prev, [courseId]: false }));
     }
@@ -121,41 +99,34 @@ export default function AdminCourses() {
                   <Link to={`/edit-course/${course.id}`} className="admin-course-btn admin-course-btn-primary">
                     Edit
                   </Link>
-                  <button onClick={() => handleAssignInstructor(course)} className="admin-course-btn admin-course-btn-default">
-                    Assign Instructor
-                  </button>
+
                   <button
                     onClick={() => handleViewStudents(course.id)}
                     className="admin-course-btn admin-course-btn-default"
                   >
-                    {loadingCourseStudents[course.id] ? "Loading..." : courseStudents[course.id] ? "Hide Students" : "View Students"}
+                    View Students
                   </button>
-                  <button onClick={() => handleDelete(course.id)} className="admin-course-btn admin-course-btn-danger">
+
+                  <button
+                    onClick={() => handleDelete(course.id)}
+                    className="admin-course-btn admin-course-btn-danger"
+                  >
                     Delete
                   </button>
                 </div>
 
-                {courseStudents[course.id] && (
-                  <div className="admin-course-enrolled">
-                    <h3 className="admin-course-enrolled-title">Enrolled Students</h3>
-                    {courseStudents[course.id].length === 0 ? (
-                      <p className="admin-course-enrolled-empty">No students enrolled yet.</p>
-                    ) : (
-                      <ul className="admin-course-enrolled-list">
-                        {courseStudents[course.id].map((s) => (
-                          <li key={s.id}>
-                            <span className="admin-course-enrolled-name">{s.name}</span>
-                            <span className="admin-course-enrolled-email">{s.email}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
+                {/* OLD inline students list removed */}
               </div>
             ))}
           </div>
         )}
+
+        {/* Modal for viewing students */}
+        <ViewStudents
+          isOpen={isModalOpen}
+          students={selectedCourseStudents}
+          isClose={() => setIsModalOpen(false)}
+        />
       </div>
     </div>
   );
