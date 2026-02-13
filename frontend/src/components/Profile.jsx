@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
+import Navbar from "./Navbar";
 import "../styles/Profile.css";
 
 function Profile() {
@@ -67,8 +68,9 @@ function Profile() {
 
     // ----- JSX FORM -----
     return (
-        <div className="profile-page">
-            <div className="profile-container">
+        <div className="dashboard-page">
+            <Navbar />
+            <div className="dashboard-container">
                 <div className="profile-card">
                     <div className="profile-header">
                         <div className="profile-avatar-wrapper">
