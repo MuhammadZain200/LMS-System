@@ -8,7 +8,7 @@
         public string Role { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; } = true;
-
+        public string? ProfileImageUrl { get; set; }
         public List<Enrollment> Enrollments { get; set; }
     }
 }

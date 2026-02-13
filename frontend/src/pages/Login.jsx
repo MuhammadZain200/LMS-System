@@ -16,9 +16,23 @@ export default function Login() {
     
     try {
       const res = await api.post("/auth/login", { email, password });
+
+      // Store JWT token in localStorage
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
-      
+
+      // ------------------- CHANGED -------------------
+      // Store full user profile in localStorage
+      const userProfile = {
+        id: res.data.id,
+        fullName: res.data.fullName,
+        email: res.data.email,
+        profileImageUrl: res.data.profileImageUrl,
+        role: res.data.role,
+      };
+      localStorage.setItem("user", JSON.stringify(userProfile));
+      // ------------------------------------------------
+
       if (keepLoggedIn) {
         localStorage.setItem("keepLoggedIn", "true");
       }

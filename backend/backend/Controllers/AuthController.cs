@@ -86,7 +86,16 @@ namespace backend.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwt = tokenHandler.WriteToken(token);
 
-            return Ok(new { token = jwt, role = user.Role });
+            return Ok(new LoginResponseDTO
+            { 
+                Token = jwt, 
+                Role = user.Role,
+                Id = user.Id.ToString(),
+                Name = user.Name,
+                Email = user.Email,
+                ProfileImageUrl = user.ProfileImageUrl  
+
+            });
         }
     }
 }
