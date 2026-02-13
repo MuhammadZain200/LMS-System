@@ -53,6 +53,9 @@ export default function Navbar() {
               <Link to="/my-courses" className="navbar-link">
                 My Courses
               </Link>
+              <Link to="/profile" className="navbar-link">
+                Profile
+              </Link>
             </>
           )}
           <button onClick={handleLogout} className="navbar-logout-btn">

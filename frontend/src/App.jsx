@@ -10,6 +10,7 @@ import EditCourse from "./pages/EditCourse";
 import CourseDetails from "./pages/CourseDetails";
 import MyCourses from "./pages/MyCourses";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import Profile from "./components/Profile";
 import "./App.css";
 
 function App() {
@@ -87,6 +88,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole={"Student,Instructor"}>
               <MyCourses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute requiredRole={"Student"}>
+              <Profile />
             </ProtectedRoute>
           }
         />
