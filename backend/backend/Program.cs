@@ -87,6 +87,9 @@ app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 
+// Enable serving static files (for profile images)
+app.UseStaticFiles();
+
 app.UseAuthentication(); // 🔑 MUST come before UseAuthorization
 app.UseAuthorization();
 

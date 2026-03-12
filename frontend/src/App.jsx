@@ -11,14 +11,15 @@ import CourseDetails from "./pages/CourseDetails";
 import MyCourses from "./pages/MyCourses";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Profile from "./components/Profile";
+import Home from "./pages/Home";
 import "./App.css";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect when we open URL */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Public landing page */}
+        <Route path="/" element={<Home />} />
 
         {/* Public Pages */}
         <Route path="/login" element={<Login />} />
